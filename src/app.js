@@ -28,5 +28,9 @@ app.use('/api/tasks', require('./routes/tasks'));
 app.use('/api/quotes', require('./routes/quotes'));
 app.use('/api/auth', require('./routes/auth')); // Register the auth routes
 
+app.get('/api/test', (req, res) => {
+    res.json({ message: 'Test route working' });
+  });
+
 
 module.exports = app;
