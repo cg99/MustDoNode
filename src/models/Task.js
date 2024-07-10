@@ -23,8 +23,12 @@ const taskSchema = new mongoose.Schema({
   },
   taskType: {
     type: String,
-    enum: ['dailyEngagement', 'regular', 'notToDo', 'note'],
+    enum: ['dailyEngagement', 'regular', 'notToDo'],
     default: 'regular'
+  }, 
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 });
 

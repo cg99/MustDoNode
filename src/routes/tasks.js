@@ -1,13 +1,13 @@
-// src/routes/taskRoutes.js
 const express = require('express');
 const Task = require('../models/Task');
+const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-// Get all tasks
-router.get('/', async (req, res) => {
+// Get all tasks for the authenticated user
+router.get('/', authMiddleware, async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find({ user: req.user.id });
     res.json(tasks);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -15,12 +15,13 @@ router.get('/', async (req, res) => {
 });
 
 // Create a new task
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, async (req, res) => {
   const task = new Task({
     title: req.body.title,
     description: req.body.description,
     taskType: req.body.taskType,
     date: req.body.date || Date.now(),
+    user: req.user.id
   });
   try {
     const newTask = await task.save();
@@ -31,11 +32,14 @@ router.post('/', async (req, res) => {
 });
 
 // Update a task
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
+    }
+    if (task.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
     }
     task.title = req.body.title || task.title;
     task.description = req.body.description || task.description;
@@ -50,11 +54,14 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a task
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const task = await Task.findById(req.params.id);
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
+    }
+    if (task.user.toString() !== req.user.id) {
+      return res.status(401).json({ message: 'Not authorized' });
     }
     await task.deleteOne();
     res.json({ message: 'Task deleted' });

@@ -1,16 +1,15 @@
 // src/app.js
 const express = require('express');
 const cors = require('cors');
-const taskRoutes = require('./routes/tasks');
-const quoteRoutes = require('./routes/quotes');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/tasks', taskRoutes);
-app.use('/api/quotes', quoteRoutes);
+app.use('/api/tasks', require('./routes/tasks'));
+app.use('/api/quotes', require('./routes/quotes'));
+app.use('/api/auth', require('./routes/auth')); // Register the auth routes
 
 
 module.exports = app;
