@@ -124,4 +124,20 @@ router.get('/me', auth, async (req, res) => {
   }
 });
 
+// Token refresh endpoint
+router.post('/refresh', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const payload = { user: { id: user.id } };
+    const newToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
+    res.json({ token: newToken });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
 module.exports = router;

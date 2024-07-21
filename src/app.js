@@ -6,8 +6,6 @@ const cors = require('cors');
 
 const app = express();
 
-console.log(process.env.CLIENT_URL);
-
 // CORS configuration
 const corsOptions = {
     origin: process.env.CLIENT_URL, // Ensure this reads correctly from .env
